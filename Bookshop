@@ -1,0 +1,49 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract Bookstore {
+    address public owner;
+    uint public premiumBookPrice;
+
+    struct Book {
+        string title;
+        bool isPremium;
+    }
+
+    Book[] public books;
+
+    mapping(address => bool) public premiumMembers;
+
+    event BookAdded(string title, bool isPremium);
+    event PremiumAccessGranted(address user);
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    constructor(uint256 _premiumBookPrice) {
+        owner = msg.sender;
+        premiumBookPrice = _premiumBookPrice;
+    }
+
+    function addBook(string memory _title, bool _isPremium) public onlyOwner {
+        books.push(Book(_title, _isPremium));
+        emit BookAdded(_title, _isPremium);
+    }
+
+    function buyPremiumAccess() public payable {
+        require(msg.value == premiumBookPrice, "Incorrect amount sent");
+        premiumMembers[msg.sender] = true;
+        emit PremiumAccessGranted(msg.sender);
+    }
+
+    function getBook(uint256 _index) public view returns (string memory title) {
+        require(_index < books.length, "Book index out of bounds");
+        Book memory book = books[_index];
+        if (book.isPremium) {
+            require(premiumMembers[msg.sender], "You need premium access to read this book");
+        }
+        return book.title;
+    }
+}
