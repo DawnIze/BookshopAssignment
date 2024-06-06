@@ -1,0 +1,33 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.13;
+import {Test, console} from "forge-std/Test.sol";
+import {Bookstore} from "../src/IzeSmartContract.sol"; 
+
+contract TestBookstore is Test{
+    Bookstore bookStore;
+    address owner = address(1);
+    address user = address (2);
+    uint256 price = 100 wei;
+
+    function setUp() public {
+        bookStore= new Bookstore (price);
+}
+function testPremiumBookPrice() public view {
+    assertEq (bookStore.premiumBookPrice(), price);
+}
+function testFailedPremiumBookPrice() public view {
+    assertEq (bookStore.premiumBookPrice(), 1000 wei);
+}
+function testbuyPremiumAccess() public {
+    vm.prank(user);
+    bookStore.buyPremiumAccess();
+}
+ /* function testaddBook() public {
+   assertEq (bookStore.addBook(), );
+ } */
+
+ function testgetBook (bool) public view{
+    assertEq(bookStore.premiumMembers (), false);
+ }
+
+}
